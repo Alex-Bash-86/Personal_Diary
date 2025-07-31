@@ -1,20 +1,65 @@
-const Modal = () => {
+const Modal = ({ setEntry }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const date = document.getElementById("date").value;
+    const imageUrl = document.getElementById("image").value;
+    const content = document.getElementById("content").value;
+
+    if (!title || !date || !imageUrl || !content) {
+      alert("You need to fill in all fields.");
+      return;
+    }
+
+    const existingEntries = JSON.parse(localStorage.getItem("entry")) || [];
+    const isDuplicateDate = existingEntries.some(
+      (entry) => entry.date === date
+    );
+    if (isDuplicateDate) {
+      alert("There is already an entry for this date.");
+      return;
+    }
+
+    const newEntry = {
+      id: Date.now(),
+      title,
+      date,
+      imageUrl,
+      content,
+    };
+
+    setEntry((prev) => [newEntry, ...prev]);
+    if (date) {
+      console.log();
+    }
+
+    document.getElementById("modal").close();
+  };
+
+  const handleClose = (e) => {
+    e.preventDefault();
+    document.getElementById("modal").close();
+  };
+
   return (
     <>
       {/* Open the modal using document.getElementById('ID').showModal() method */}
-      <button
-        className="btn"
-        onClick={() => document.getElementById("modal").showModal()}
-      >
-        Add Entry
-      </button>
+      <div className="flex justify-center">
+        <button
+          className="btn bg-blue-500 hover:bg-blue-400 mt-4"
+          onClick={() => document.getElementById("modal").showModal()}
+        >
+          Add Entry
+        </button>
+      </div>
       <dialog id="modal" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg text-center">Diary</h3>
           <p className="py-4 text-center">Write whatever you like</p>
           <div className="">
             <form>
-              <label>Title: </label>
+              <label>Title:</label>
               <br />
               <input
                 id="title"
@@ -24,7 +69,7 @@ const Modal = () => {
                 placeholder="Enter title..."
               />
               <br />
-              <label>Date: </label>
+              <label>Date:</label>
               <br />
               <input
                 id="date"
@@ -36,7 +81,7 @@ const Modal = () => {
               />
               <br />
               <br />
-              <label>Image</label>
+              <label>Image:</label>
               <br />
               <input
                 id="image"
@@ -56,11 +101,17 @@ const Modal = () => {
                 placeholder="Content here..."
                 className="border"
               />
-              <button className="bg-blue-500 hover:bg-blue-400 text-white p-2 rounded w-full mt-4">
-                Submit
-              </button>
-              <button className="btn w-full">Close</button>
             </form>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="bg-blue-500 hover:bg-blue-400 text-white p-2 rounded w-full mt-4"
+            >
+              Submit
+            </button>
+            <button onClick={handleClose} className="btn w-full mt-2">
+              Close
+            </button>
           </div>
         </div>
       </dialog>
